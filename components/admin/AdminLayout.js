@@ -30,7 +30,6 @@ export default function AdminLayout({ children, title = 'Admin Panel' }) {
     const s = getSession();
     if (!s || s.role !== 'admin') { router.push('/admin2/login'); return; }
     setSession(s);
-    // Simulate live count
     setOnlineCount(Math.floor(Math.random() * 80) + 15);
     const interval = setInterval(() => setOnlineCount(Math.floor(Math.random() * 80) + 15), 30000);
     return () => clearInterval(interval);
@@ -59,8 +58,8 @@ export default function AdminLayout({ children, title = 'Admin Panel' }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto flex-shrink-0`}
-        style={{ background: SIDEBAR, borderRight: `1px solid ${BORDER}`, transform: sidebarOpen ? 'translateX(0)' : undefined }}
+        className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto flex-shrink-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ background: SIDEBAR, borderRight: `1px solid ${BORDER}` }}
       >
         {/* Logo */}
         <div className="px-6 py-5 border-b" style={{ borderColor: BORDER }}>
@@ -139,27 +138,27 @@ export default function AdminLayout({ children, title = 'Admin Panel' }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Top bar */}
-        <header className="h-16 flex items-center justify-between px-6 flex-shrink-0" style={{ background: SIDEBAR, borderBottom: `1px solid ${BORDER}` }}>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-xl text-gray-400 hover:text-white transition-colors" style={{ background: '#1e2433' }}>
+        <header className="h-16 flex items-center justify-between px-4 sm:px-6 flex-shrink-0" style={{ background: SIDEBAR, borderBottom: `1px solid ${BORDER}` }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-2 rounded-xl text-gray-400 hover:text-white transition-colors flex-shrink-0" style={{ background: '#1e2433' }}>
               {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-            <h1 className="font-display font-semibold text-gray-100">{title}</h1>
+            <h1 className="font-display font-semibold text-gray-100 truncate">{title}</h1>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-xs text-gray-600">{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-            <div className="w-px h-4" style={{ background: BORDER }} />
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="text-xs text-gray-600 hidden sm:block">{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div className="w-px h-4 hidden sm:block" style={{ background: BORDER }} />
             <Link href="/admin2/notifications"
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-colors" style={{ background: '#1e2433' }}>
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition-colors flex-shrink-0" style={{ background: '#1e2433' }}>
               <Bell size={16} />
             </Link>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-3 sm:p-6 w-full max-w-full">
           {children}
         </main>
       </div>
