@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getSession, clearSession } from '../../lib/store';
+import { supabase } from '../../lib/supabase';
 import {
   LayoutDashboard, Users, BookOpen, FileText, MessageSquare,
   Bell, BarChart2, Shield, LogOut, Menu, X, Brain, Activity,
@@ -35,7 +36,10 @@ export default function AdminLayout({ children, title = 'Admin Panel' }) {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (supabase) {
+      try { await supabase.auth.signOut(); } catch (e) {}
+    }
     clearSession();
     router.push('/admin2/login');
   };
