@@ -9,6 +9,8 @@ import {
   ChevronRight, ExternalLink, BookMarked, Wifi, Briefcase
 } from 'lucide-react';
 
+const ADMIN_EMAIL = 'amitrathaur2015@gmail.com';
+
 const NAV = [
   { href: '/admin2', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin2/jobs', label: '💼 Naukri Manager', icon: Briefcase },
@@ -28,12 +30,21 @@ export default function AdminLayout({ children, title = 'Admin Panel' }) {
   const router = useRouter();
 
   useEffect(() => {
-    const s = getSession();
-    if (!s || s.role !== 'admin') { router.push('/admin2/login'); return; }
-    setSession(s);
-    setOnlineCount(Math.floor(Math.random() * 80) + 15);
-    const interval = setInterval(() => setOnlineCount(Math.floor(Math.random() * 80) + 15), 30000);
-    return () => clearInterval(interval);
+    let interval;
+    const check = async () => {
+      const s = getSession();
+      let ok = !!s && s.role === 'admin';
+      if (ok && supabase) {
+        const { data } = await supabase.auth.getSession();
+        ok = !!(data && data.session && data.session.user.email === ADMIN_EMAIL);
+      }
+      if (!ok) { router.push('/admin2/login'); return; }
+      setSession(s);
+      setOnlineCount(Math.floor(Math.random() * 80) + 15);
+      interval = setInterval(() => setOnlineCount(Math.floor(Math.random() * 80) + 15), 30000);
+    };
+    check();
+    return () => { if (interval) clearInterval(interval); };
   }, []);
 
   const handleLogout = async () => {
