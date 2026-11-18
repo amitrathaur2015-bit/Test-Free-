@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getSession, clearSession, getNotifications, getLiveOnlineCount } from '../../lib/store';
+import { supabase } from '../../lib/supabase';
 import { Menu, X, LogOut, Shield, Bell, MessageCircle, Briefcase, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
@@ -33,7 +34,10 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (supabase) {
+      try { await supabase.auth.signOut(); } catch (e) {}
+    }
     clearSession();
     setSession(null);
     router.push('/');
